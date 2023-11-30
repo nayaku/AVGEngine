@@ -47,23 +47,23 @@ namespace AVGEngine
         }
         private static IEnumerator _Print(string text, TextMeshProUGUI textMesh)
         {
-            Debug.Log("Print: " + text);
+            //Debug.Log("Print: " + text);
             textMesh.text = "";
             for (int i = 0; i < text.Length; i++)
             {
                 textMesh.text += text[i];
                 yield return new WaitUntilForSeconds(
-                    () => Input.GetMouseButtonDown(0),
+                    () => InputControls.NextDialog(),
                     AVGSettings.TextSpeed);
-                if (Input.GetMouseButtonDown(0))
+                if (InputControls.NextDialog())
                 {
                     textMesh.text = text;
                     yield return null;
                     break;
                 }
             }
-            yield return new WaitForMouseDown();
-            Debug.Log("Print: " + text + " Done");
+            yield return new WaitFor(InputControls.NextDialog);
+            //Debug.Log("Print: " + text + " Done");
             _waitEvent.Set();
         }
     }

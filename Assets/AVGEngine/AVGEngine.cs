@@ -1,10 +1,7 @@
 ﻿using GalgameNovelScript;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
 namespace AVGEngine
@@ -16,6 +13,7 @@ namespace AVGEngine
 
         public static AVGEngine Instance => _instance;
         private Thread _scriptThread;
+
         public static void RunInMainThread(Action action)
         {
             Instance._mainThreadActions.Enqueue(action);
