@@ -252,15 +252,11 @@ namespace GalgameNovelScript
                     }
                     return new Token(TokenType.ASSIGN, "=", Line, Column);
                 }
-                if (CurrentChar == '!')
+                if (CurrentChar == '!' && Peek() == '=')
                 {
                     Advance();
-                    if (CurrentChar == '=')
-                    {
-                        Advance();
-                        return new Token(TokenType.NE, "!=", Line, Column);
-                    }
-                    return new Token(TokenType.NOT, "!", Line, Column);
+                    Advance();
+                    return new Token(TokenType.NE, "!=", Line, Column);
                 }
                 if (CurrentChar == '<')
                 {
@@ -354,6 +350,7 @@ namespace GalgameNovelScript
         private bool IsLetter()
         {
             return char.IsLetter(CurrentChar) || CurrentChar == '_' || CurrentChar == '\\' ||
+                (CurrentChar > '\u0020' && CurrentChar <= '\u007F' && !char.IsDigit(CurrentChar) && Token.Operator.IndexOf(CurrentChar) == -1) ||
                 (CurrentChar > '\u007F' && Token.ChineseSymbol.IndexOf(CurrentChar) == -1);
         }
     }

@@ -72,7 +72,8 @@ namespace GalgameNovelScript
             {"关",TokenType.FALSE},
             {"空",TokenType.NONE},
         };
-        public static string ChineseSymbol { get; } = "（）【】：“”‘’　";
+        public static string Operator { get; } = "+-*/%()[]^=<>";
+        public static string ChineseSymbol { get; } = "（）【】：";
 
         public Token(TokenType type, object value, int line, int column)
         {
