@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Search;
 using UnityEngine;
 
 namespace AVGEngine
@@ -14,12 +12,13 @@ namespace AVGEngine
     {
         public static void AddToEnv(Interpreter interpreter)
         {
-            interpreter.AddToGlobalScope("Êä³ö", new Action<object>(Log));
-            interpreter.AddToGlobalScope("µÈ´ý", new Action<float>(Wait));
-            interpreter.AddToGlobalScope("Êä³ö", new Action<string>(PrintFunc.Print));
+            interpreter.AddToGlobalScope("ç­‰å¾…", new Action<float>(Wait));
+            interpreter.AddToGlobalScope("è¾“å‡º", new Action<object>((object text) => DialogFunc.Dialog(text.ToString())));
+
+            interpreter.Dialog = DialogFunc.Dialog;
             interpreter.ShowCaseTip = OptionFunc.ShowCaseTip;
             interpreter.ShowOptions = OptionFunc.ShowOptions;
-            
+
         }
         public static void Log(object obj)
         {
@@ -34,20 +33,22 @@ namespace AVGEngine
         }
     }
 
-    public class PrintFunc
+    public class DialogFunc
     {
         private static AutoResetEvent _waitEvent = new(false);
-        public static void Print(object text)
+        public static void Dialog(string text, string name = "")
         {
             _waitEvent.Reset();
             AVGEngine.RunInMainThread(() =>
             {
+                var nameMesh = GameObject.Find("DialogNameText").GetComponent<TextMeshProUGUI>();
+                nameMesh.text = name;
                 var textMesh = GameObject.Find("DialogText").GetComponent<TextMeshProUGUI>();
-                AVGEngine.Instance.StartCoroutine(_Print(text.ToString(), textMesh));
+                AVGEngine.Instance.StartCoroutine(_Dialog(text.ToString(), textMesh));
             });
             _waitEvent.WaitOne();
         }
-        private static IEnumerator _Print(string text, TextMeshProUGUI textMesh)
+        private static IEnumerator _Dialog(string text, TextMeshProUGUI textMesh)
         {
             textMesh.text = "";
             for (int i = 0; i < text.Length; i++)

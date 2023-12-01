@@ -9,6 +9,7 @@ namespace GalgameNovelScript
         public CallStack CallStack { get; set; } = new CallStack();
         public ActivationRecord GlobalScope { get; set; } = new ActivationRecord("global", 1);
         public ActivationRecord CurrenScope => CallStack.Peek();
+        public Action<string, string> Dialog { get; set; }
         public Action<string> ShowCaseTip { get; set; }
         public Func<List<string>, int> ShowOptions { get; set; }
         public AST Tree { get; set; }
@@ -164,20 +165,27 @@ namespace GalgameNovelScript
         }
         public object VisitFunCall(FunCall node)
         {
-            var fun = CurrenScope.GetMember(node.VarNode.Value) ??
-                throw new Exception("未定义的标识符");
-            if (fun is Delegate func)
+            if (node.VarNode != null && CurrenScope.GetMember(node.VarNode.Value) != null)
             {
-                var args = new List<object>();
-                foreach (var arg in node.ActualParams.ArgsList)
+                var fun = CurrenScope.GetMember(node.VarNode.Value);
+                if (fun is Delegate func)
                 {
-                    args.Add(Visit(arg));
+                    var args = new List<object>();
+                    foreach (var arg in node.ActualParams.ArgsList)
+                    {
+                        args.Add(Visit(arg));
+                    }
+                    return func.DynamicInvoke(args.ToArray());
                 }
-                return func.DynamicInvoke(args.ToArray());
             }
-            else
-                throw new Exception("未定义的标识符");
-
+            var name = node.VarNode?.Value ?? "";
+            if (Dialog == null)
+                throw new Exception("未实现的对话功能");
+            if (node.ActualParams.ArgsList.Count > 1)
+                throw new Exception("对话参数过多，需要使用引号“”包裹");
+            var text = Visit(node.ActualParams.ArgsList[0]).ToString();
+            Dialog(text,name);
+            return null;
         }
         public object VisitIfStmt(IfStmt node)
         {
