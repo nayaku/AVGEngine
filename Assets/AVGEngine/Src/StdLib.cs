@@ -103,6 +103,7 @@ namespace AVGEngine
         public static int ShowOptions(List<string> options)
         {
             _waitEvent.Reset();
+            // 显示选项
             AVGEngine.RunInMainThread(() =>
             {
                 var optionPanel = GameObject.Find("OptionPanel");
@@ -121,6 +122,15 @@ namespace AVGEngine
                 }
             });
             _waitEvent.WaitOne();
+            // 清空选项
+            AVGEngine.RunInMainThread(() =>
+            {
+                var optionPanel = GameObject.Find("OptionPanel");
+                foreach (Transform child in optionPanel.transform)
+                {
+                    UnityEngine.Object.Destroy(child.gameObject);
+                }
+            });
             return _optionIndex;
         }
     }
