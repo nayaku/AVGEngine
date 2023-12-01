@@ -106,21 +106,11 @@ namespace GalgameNovelScript
     public class CaseStmt : AST
     {
         public AST Condition { get; set; }
-        public List<WhenStmt> WhenStmts { get; set; }
-        public CaseStmt(AST condition, List<WhenStmt> whenStmts)
+        public List<(AST Condition, AST ThenStmt)> WhenStmts { get; set; }
+        public CaseStmt(AST condition, List<(AST Condition, AST ThenStmt)> whenStmts)
         {
             Condition = condition;
             WhenStmts = whenStmts;
-        }
-    }
-    public class WhenStmt : AST
-    {
-        public AST Condition { get; set; }
-        public AST ThenStmt { get; set; }
-        public WhenStmt(AST condition, AST thenStmt)
-        {
-            Condition = condition;
-            ThenStmt = thenStmt;
         }
     }
     public class Suite : AST

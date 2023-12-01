@@ -163,7 +163,7 @@ namespace GalgameNovelScript
             if (CurrentToken.Type != TokenType.NEWLINE)
                 expr = Expr();
             Eat(TokenType.NEWLINE);
-            var whens = new List<WhenStmt>();
+            var whens = new List<(AST Condition, AST ThenStmt)>();
             while (CurrentToken.Type == TokenType.WHEN)
             {
                 Eat(TokenType.WHEN);
@@ -171,7 +171,7 @@ namespace GalgameNovelScript
                 if (CurrentToken.Type != TokenType.NEWLINE)
                     whenExpr = Expr();
                 var whenSuite = Suite();
-                whens.Add(new WhenStmt(whenExpr, whenSuite));
+                whens.Add((whenExpr, whenSuite));
             }
             var node = new CaseStmt(expr, whens);
             return node;

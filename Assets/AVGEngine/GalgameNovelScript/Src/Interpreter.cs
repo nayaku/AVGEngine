@@ -9,6 +9,8 @@ namespace GalgameNovelScript
         public CallStack CallStack { get; set; } = new CallStack();
         public ActivationRecord GlobalScope { get; set; } = new ActivationRecord("global", 1);
         public ActivationRecord CurrenScope => CallStack.Peek();
+        public Action<string> ShowCaseTip { get; set; }
+        public Func<List<string>, int> ShowOptions { get; set; }
         public AST Tree { get; set; }
         public Interpreter(AST tree)
         {
@@ -203,7 +205,23 @@ namespace GalgameNovelScript
         }
         public object VisitCaseStmt(CaseStmt node)
         {
-            throw new Exception("未实现");
+            if (ShowCaseTip == null || ShowOptions == null)
+                throw new Exception("未实现的选择功能");
+            ShowCaseTip(Visit(node.Condition).ToString());
+
+            var options = new List<string>();
+            foreach ((var condition, _) in node.WhenStmts)
+            {
+                options.Add(Visit(condition).ToString());
+            }
+            var index = ShowOptions(options);
+            if (index < 0 || index >= node.WhenStmts.Count)
+                throw new Exception("未知的选项");
+            var activeRecord = new ActivationRecord("case", CurrenScope.Level + 1, CurrenScope);
+            CallStack.Push(activeRecord);
+            Visit(node.WhenStmts[index].ThenStmt);
+            CallStack.Pop();
+            return null;
         }
         public object VisitSuite(Suite node)
         {
